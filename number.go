@@ -14,11 +14,11 @@ type SearchNumberResponse struct {
 }
 
 type Number struct {
-	NumberKey    string      `json:"numberKey,omitempty"`
-	Number       string      `json:"number,omitempty"`
-	Country      string      `json:"country,omitempty"`
+	NumberKey    string      `json:"numberKey"`
+	Number       string      `json:"number"`
+	Country      string      `json:"country"`
 	Type         string      `json:"type,omitempty"`
-	Capabilities []string    `json:"capabilities,omitempty"`
+	Capabilities []string    `json:"capabilities"`
 	Shared       bool        `json:"shared,omitempty"`
 	Price        NumberPrice `json:"price,omitempty"`
 }

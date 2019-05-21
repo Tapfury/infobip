@@ -17,6 +17,9 @@ const (
 
 	// AvailableNumberPath for searching number
 	AvailableNumberPath = "numbers/1/numbers/available"
+
+	// RentNumberPath for purchasing number
+	RentNumberPath = "numbers/1/numbers"
 )
 
 // HTTPInterface helps Infobip tests
@@ -40,6 +43,25 @@ func ClientWithBasicAuth(username, password string) *Client {
 		Password:   password,
 		HTTPClient: &http.Client{},
 	}
+}
+
+// Rent return a newly purchased number
+func (c Client) Rent(numberKey string) (*Number, error) {
+	data := map[string]string{
+		"numberKey": numberKey,
+	}
+	b, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+
+	num := &Number{}
+
+	if err := c.defaultPostRequest(b, RentNumberPath, num); err != nil {
+		return nil, err
+	}
+
+	return num, nil
 }
 
 // SearchNumber return a list of available number
@@ -100,6 +122,22 @@ func (c Client) defaultRequest(b []byte, path string) (r Response, err error) {
 
 	err = json.NewDecoder(resp.Body).Decode(&r)
 	return
+}
+
+func (c Client) defaultPostRequest(b []byte, path string, v interface{}) error {
+	req, err := http.NewRequest(http.MethodPost, c.BaseURL+path, bytes.NewBuffer(b))
+	if err != nil {
+		return err
+	}
+	req.SetBasicAuth(c.Username, c.Password)
+	req.Header.Add("Content-Type", "application/json")
+	resp, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	return json.NewDecoder(resp.Body).Decode(v)
 }
 
 func (c Client) defaultGetRequest(path string, v interface{}) error {
