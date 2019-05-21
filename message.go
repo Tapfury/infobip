@@ -24,6 +24,30 @@ type Destination struct {
 	To string `json:"to"`
 }
 
+// MessageResponse body response
+type MessageResponse struct {
+	BulkID   string        `json:"bulkId,omitempty"`
+	Messages []MessageInfo `json:"messages"`
+}
+
+// MessageInfo ...
+type MessageInfo struct {
+	ID       string        `json:"messageId"`
+	To       string        `json:"to"`
+	Status   MessageStatus `json:"status"`
+	SMSCount int           `json:"smsCount"`
+}
+
+// MessageStatus ...
+type MessageStatus struct {
+	ID          int    `json:"id"`
+	Action      string `json:"action,omitempty"`
+	GroupID     int    `json:"groupId"`
+	GroupName   string `json:"groupName"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
 // Validate validates the entire message values
 func (b BulkMessage) Validate() (err error) {
 	for _, m := range b.Messages {
