@@ -38,44 +38,53 @@ func ClientWithBasicAuth(username, password string) *Client {
 }
 
 // SingleMessage sends one message to one recipient
-func (c Client) SingleMessage(m Message) (r Response, err error) {
-	if err = m.Validate(); err != nil {
-		return
+func (c Client) SingleMessage(m Message) (*MessageResponse, error) {
+	if err := m.Validate(); err != nil {
+		return nil, err
 	}
 	b, err := json.Marshal(m)
 	if err != nil {
-		return
+		return nil, err
 	}
-	r, err = c.defaultRequest(b, SingleMessagePath)
-	return
+
+	resp := &MessageResponse{}
+	if err := c.defaultPostRequest(b, SingleMessagePath, resp); err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }
 
 // AdvancedMessage sends messages to the recipients
-func (c Client) AdvancedMessage(m BulkMessage) (r Response, err error) {
-	if err = m.Validate(); err != nil {
-		return
+func (c Client) AdvancedMessage(m BulkMessage) (*MessageResponse, error) {
+	if err := m.Validate(); err != nil {
+		return nil, err
 	}
 	b, err := json.Marshal(m)
 	if err != nil {
-		return
+		return nil, err
 	}
-	r, err = c.defaultRequest(b, AdvancedMessagePath)
-	return
+
+	resp := &MessageResponse{}
+	if err := c.defaultPostRequest(b, AdvancedMessagePath, resp); err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }
 
-func (c Client) defaultRequest(b []byte, path string) (r Response, err error) {
+func (c Client) defaultPostRequest(b []byte, path string, v interface{}) error {
 	req, err := http.NewRequest(http.MethodPost, c.BaseURL+path, bytes.NewBuffer(b))
 	if err != nil {
-		return
+		return err
 	}
 	req.SetBasicAuth(c.Username, c.Password)
 	req.Header.Add("Content-Type", "application/json")
 	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
-		return
+		return err
 	}
 	defer resp.Body.Close()
 
-	err = json.NewDecoder(resp.Body).Decode(&r)
-	return
+	return json.NewDecoder(resp.Body).Decode(v)
 }
