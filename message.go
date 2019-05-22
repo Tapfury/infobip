@@ -16,6 +16,7 @@ type Message struct {
 	Text            string        `json:"text"`
 	Transliteration string        `json:"transliteration,omitempty"`
 	LanguageCode    string        `json:"languageCode,omitempty"`
+	NotifyURL       string        `json:"notifyUrl,omitempty"`
 }
 
 // Destination contains the recipient
@@ -46,6 +47,19 @@ type MessageStatus struct {
 	GroupName   string `json:"groupName"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
+}
+
+// MessageStatusWithID ...
+type MessageStatusWithID struct {
+	BulkID string        `json:"bulkId,omitempty"`
+	ID     string        `json:"messageId"`
+	To     string        `json:"to"`
+	Status MessageStatus `json:"status"`
+}
+
+// MessageStatusResponse ...
+type MessageStatusResponse struct {
+	Results []MessageStatusWithID `json:"results"`
 }
 
 // Validate validates the entire message values

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
+	"net/url"
 
 	"github.com/google/go-querystring/query"
 )
@@ -20,6 +21,9 @@ const (
 
 	// RentNumberPath for purchasing number
 	RentNumberPath = "numbers/1/numbers"
+
+	// SMSStatusPath for getting status
+	SMSStatusPath = "sms/1/reports"
 )
 
 // HTTPInterface helps Infobip tests
@@ -115,6 +119,25 @@ func (c Client) AdvancedMessage(m BulkMessage) (*MessageResponse, error) {
 	}
 
 	return resp, nil
+}
+
+// GetSMSStatus return sms status
+func (c Client) GetSMSStatus(messageID string) (*MessageStatusWithID, error) {
+	params := url.Values{}
+	params.Add("messageId", messageID)
+
+	path := SMSStatusPath + "?" + params.Encode()
+
+	resp := &MessageStatusResponse{}
+	if err := c.defaultGetRequest(path, resp); err != nil {
+		return nil, err
+	}
+
+	if len(resp.Results) != 1 {
+		return nil, ErrSMSStatusNotFound
+	}
+
+	return &resp.Results[0], nil
 }
 
 func (c Client) defaultPostRequest(b []byte, path string, v interface{}) error {
