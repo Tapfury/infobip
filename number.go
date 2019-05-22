@@ -1,11 +1,11 @@
 package infobip
 
 type SearchNumberParmas struct {
-	Number       string `json:"capabilities,omitempty" url:"capabilities,omitempty"`
+	Number       string `json:"number,omitempty" url:"number,omitempty"`
 	Capabilities string `json:"capabilities,omitempty" url:"capabilities,omitempty"`
 	Country      string `json:"country,omitempty" url:"country,omitempty"`
 	Limit        int    `json:"limit,omitempty" url:"limit,omitempty"`
-	Page         int    `page:"limit,omitempty" url:"page,omitempty"`
+	Page         int    `json:"page,omitempty" url:"page,omitempty"`
 }
 
 type SearchNumberResponse struct {
