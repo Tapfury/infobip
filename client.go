@@ -133,22 +133,6 @@ func (c Client) defaultPostRequest(b []byte, path string, v interface{}) error {
 	return json.NewDecoder(resp.Body).Decode(v)
 }
 
-func (c Client) defaultPostRequest(b []byte, path string, v interface{}) error {
-	req, err := http.NewRequest(http.MethodPost, c.BaseURL+path, bytes.NewBuffer(b))
-	if err != nil {
-		return err
-	}
-	req.SetBasicAuth(c.Username, c.Password)
-	req.Header.Add("Content-Type", "application/json")
-	resp, err := c.HTTPClient.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	return json.NewDecoder(resp.Body).Decode(v)
-}
-
 func (c Client) defaultGetRequest(path string, v interface{}) error {
 	req, err := http.NewRequest(http.MethodGet, c.BaseURL+path, nil)
 	if err != nil {
