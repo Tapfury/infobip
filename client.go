@@ -27,6 +27,9 @@ const (
 	// RentNumberPath for purchasing number
 	RentNumberPath = "numbers/1/numbers"
 
+	// UnrentNumberPath for purchasing number
+	UnrentNumberPath = "numbers/1/numbers"
+
 	// SMSStatusPath for getting status
 	SMSStatusPath = "sms/1/reports"
 )
@@ -110,6 +113,13 @@ func (c Client) Rent(numberKey string) (*Number, error) {
 	}
 
 	return num, nil
+}
+
+// Unrent rent a number using numberKey
+func (c Client) Unrent(numberKey string) error {
+	path := UnrentNumberPath + "/" + numberKey
+
+	return c.defaultDeleteRequest(path)
 }
 
 // SearchNumber return a list of available number
@@ -214,6 +224,17 @@ func (c Client) defaultGetRequest(path string, v interface{}) error {
 	defer resp.Body.Close()
 
 	return json.NewDecoder(resp.Body).Decode(v)
+}
+
+func (c Client) defaultDeleteRequest(path string) error {
+	req, err := http.NewRequest(http.MethodDelete, c.BaseURL+path, nil)
+	if err != nil {
+		return err
+	}
+	c.setAuthentication(req)
+	req.Header.Add("Content-Type", "application/json")
+	_, err = c.HTTPClient.Do(req)
+	return err
 }
 
 func (c Client) setAuthentication(req *http.Request) error {
