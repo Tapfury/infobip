@@ -3,6 +3,7 @@ package infobip
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 
@@ -10,6 +11,10 @@ import (
 )
 
 const (
+
+	// BasePath ...
+	BasePath = "https://api.infobip.com/"
+
 	//SingleMessagePath for sending a single message
 	SingleMessagePath = "sms/1/text/single"
 
@@ -36,15 +41,25 @@ type Client struct {
 	BaseURL    string
 	Username   string
 	Password   string
+	ApiKey     string
 	HTTPClient HTTPInterface
 }
 
 // ClientWithBasicAuth returns a pointer to infobip.Client with Infobip funcs
 func ClientWithBasicAuth(username, password string) *Client {
 	return &Client{
-		BaseURL:    "https://api.infobip.com/",
+		BaseURL:    BasePath,
 		Username:   username,
 		Password:   password,
+		HTTPClient: &http.Client{},
+	}
+}
+
+// ClientWithApiKey returns a pointer to infobip.Client with Infobip funcs
+func ClientWithApiKey(apiKey string) *Client {
+	return &Client{
+		BaseURL:    BasePath,
+		ApiKey:     apiKey,
 		HTTPClient: &http.Client{},
 	}
 }
@@ -145,7 +160,7 @@ func (c Client) defaultPostRequest(b []byte, path string, v interface{}) error {
 	if err != nil {
 		return err
 	}
-	req.SetBasicAuth(c.Username, c.Password)
+	c.setAuthentication(req)
 	req.Header.Add("Content-Type", "application/json")
 	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
@@ -161,7 +176,7 @@ func (c Client) defaultGetRequest(path string, v interface{}) error {
 	if err != nil {
 		return err
 	}
-	req.SetBasicAuth(c.Username, c.Password)
+	c.setAuthentication(req)
 	req.Header.Add("Content-Type", "application/json")
 	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
@@ -170,4 +185,16 @@ func (c Client) defaultGetRequest(path string, v interface{}) error {
 	defer resp.Body.Close()
 
 	return json.NewDecoder(resp.Body).Decode(v)
+}
+
+func (c Client) setAuthentication(req *http.Request) error {
+	if c.ApiKey != "" {
+		req.Header.Add("Authorization", fmt.Sprintf("App %s", c.ApiKey))
+		return nil
+	} else if c.Username != "" && c.Password != "" {
+		req.SetBasicAuth(c.Username, c.Password)
+		return nil
+	}
+
+	return ErrNoAuthentication
 }

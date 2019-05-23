@@ -15,6 +15,9 @@ var (
 
 	// ErrSMSStatusNotFound ...
 	ErrSMSStatusNotFound = Error{Err: "SMS Status not found"}
+
+	// ErrNoAuthentication ...
+	ErrNoAuthentication = Error{Err: "Not auth format available"}
 )
 
 // Error for Infobip
