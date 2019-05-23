@@ -1,7 +1,5 @@
 package infobip
 
-import "fmt"
-
 var (
 	// ErrForDestinationNonAlphanumeric ...
 	ErrForDestinationNonAlphanumeric = Error{Err: "non-alphanumeric 'Destination' value must be between 3 and 14 numbers"}
@@ -14,6 +12,12 @@ var (
 
 	// ErrForToNonAlphanumeric ...
 	ErrForToNonAlphanumeric = Error{Err: "non-alphanumeric 'To' value must be between 3 and 14 numbers"}
+
+	// ErrSMSStatusNotFound ...
+	ErrSMSStatusNotFound = Error{Err: "SMS Status not found"}
+
+	// ErrNoAuthentication ...
+	ErrNoAuthentication = Error{Err: "Not auth format available"}
 )
 
 // Error for Infobip
@@ -23,5 +27,5 @@ type Error struct {
 
 // Error func to implements error interface
 func (e Error) Error() string {
-	return fmt.Sprintf(`{"error":"%v"}`, e.Err)
+	return e.Err
 }
