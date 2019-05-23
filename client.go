@@ -64,6 +64,35 @@ func ClientWithApiKey(apiKey string) *Client {
 	}
 }
 
+// CreateNumberConfig create a config for a specific number key
+func (c Client) CreateNumberConfig(numberKey string) (*ConfigResponse, error) {
+	configPath := fmt.Sprintf("numbers/1/numbers/%s/configurations", numberKey)
+
+	resp := &ConfigResponse{}
+	if err := c.defaultPostRequest(nil, configPath, resp); err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// CreateNumberAction create a action for a specific number key
+func (c Client) CreateNumberAction(actionData *Action, numberKey, configKey string) (*Action, error) {
+	actionPath := fmt.Sprintf("numbers/1/numbers/%s/configurations/%s/actions", numberKey, configKey)
+
+	b, err := json.Marshal(actionData)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := &Action{}
+	if err := c.defaultPostRequest(b, actionPath, resp); err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
 // Rent return a newly purchased number
 func (c Client) Rent(numberKey string) (*Number, error) {
 	data := map[string]string{
