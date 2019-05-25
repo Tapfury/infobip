@@ -30,6 +30,9 @@ const (
 	// UnrentNumberPath for purchasing number
 	UnrentNumberPath = "numbers/1/numbers"
 
+	// PurchasedNumberPath to get purchased number
+	PurchasedNumberPath = "numbers/1/numbers"
+
 	// SMSStatusPath for getting status
 	SMSStatusPath = "sms/1/reports"
 )
@@ -123,15 +126,32 @@ func (c Client) Unrent(numberKey string) error {
 }
 
 // SearchNumber return a list of available number
-func (c Client) SearchNumber(parmas SearchNumberParmas) (*SearchNumberResponse, error) {
+func (c Client) SearchNumber(parmas NumberParmas) (*NumberResponse, error) {
 	v, err := query.Values(parmas)
 	if err != nil {
 		return nil, err
 	}
 
 	path := AvailableNumberPath + "?" + v.Encode()
-	resp := &SearchNumberResponse{}
+	resp := &NumberResponse{}
 
+	if err := c.defaultGetRequest(path, resp); err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// ListPurchasedNumber return a purchased number
+func (c Client) ListPurchasedNumber(parmas NumberParmas) (*NumberResponse, error) {
+	v, err := query.Values(parmas)
+	if err != nil {
+		return nil, err
+	}
+
+	path := PurchasedNumberPath + "?" + v.Encode()
+
+	resp := &NumberResponse{}
 	if err := c.defaultGetRequest(path, resp); err != nil {
 		return nil, err
 	}
